@@ -1,0 +1,14 @@
+.jugadoresConectados{
+    float:left; margin:0px 10px 0px 30px
+}
+.jugadoresConectadosDatos{
+color: rgb(111, 196, 0);
+
+}
+.jugadoresConectados span:nth-of-type(2) {
+    display: block;
+  }
+
+
+  
+  
