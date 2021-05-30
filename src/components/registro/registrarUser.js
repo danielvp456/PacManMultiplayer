@@ -51,7 +51,7 @@ export default class registrarUser extends Component {
             console.log(resultado.statusText);
             if (resultado.statusText == 'OK') {
                 await swal({
-                    title: "Registro Exitoso",
+                    title: "Registro Exitoso, disfruta del juego",
                     text: "",
                     icon: "success",
                     timer: "3000"
