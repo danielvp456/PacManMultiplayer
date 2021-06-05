@@ -16,6 +16,7 @@ export default class login extends Component {
         this.state = {
             logueado: false
         }
+        console.log("Login");
     }
 
     onInputChange = e => {
