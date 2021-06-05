@@ -59,8 +59,8 @@ export default class registrarUser extends Component {
                 window.location.href = '/';
             } else {
                 await swal({
-                    title: "El correo ya esta registrado",
-                    text: "Por favor, escribe otro correo",
+                    title: "Algo salió mal",
+                    text: "Porfavor revisa que todo esté bien",
                     icon: "warning",
                     timer: "3000"
                 });

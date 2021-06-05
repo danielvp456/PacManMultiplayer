@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import axios from 'axios'
 import swal from 'sweetalert';
+import { Link } from 'react-router-dom';
 
 
 export default class login extends Component {
@@ -12,23 +13,8 @@ export default class login extends Component {
 
     constructor() {
         super();
-
-
-        if ("geolocation" in navigator) {
-            console.log("Available");
-        } else {
-            console.log("Not Available");
-        }
-        
-        if (localStorage.getItem('correo') === null) {
-
-        } else {
-            if (localStorage.getItem('tipoDeUser') === 'admin') {
-                window.location.href = '/paginaPrincipalAdmin';
-            } else if (localStorage.getItem('tipoDeUser') === 'jugador') {
-
-                window.location.href = '/paginaPrincipalJugador';
-            }
+        this.state = {
+            logueado: false
         }
     }
 
@@ -40,42 +26,33 @@ export default class login extends Component {
 
     onSubmit = async (e) => {
         e.preventDefault();
-        const datosLogin = {
-            correo: this.state.correo,
-            password: this.state.password,
-        };
+        var correo = document.getElementById("correoUsuario").value;
+        var contra = document.getElementById("contraseña").value;
+        console.log("Tengo: " + correo + "  cs " + contra);
+        const res = await axios.get('https://serverpacmanpage.herokuapp.com/server/users');
 
-        const res = await axios.post('https://serverpacmanoage.herokuapp.com/', datosLogin);
-        const resultado = res.data.resultadoLogin;
-
-        if (resultado === 'true') {
-            // cambiar estado a conectado
-            const estado = {
-                correo: this.state.correo,
-                estado: "conectado",
-            };
-            const resEstado = await axios.patch('https://serverpacmanoage.herokuapp.com/', estado);
-
-            console.log(res.data.tipoDeUser)
-            if (res.data.tipoDeUser === 'jugador') {
-                localStorage.setItem('correo', this.state.correo);
-                console.log(res.data)
-                localStorage.setItem('tipoDeUser', res.data.tipoDeUser);
+        for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i]._id == correo && res.data[i].pass == contra) {
+                localStorage.setItem('correo', correo);
+                localStorage.setItem('tipoDeUser', res.data[i].user_type);
+                localStorage.setItem('ubicacion', "calle 21 Miami");
+                localStorage.setItem('logued', 'true');
+                this.setState({ logueado: true });
                 window.location.href = '/paginaPrincipalJugador';
-            } else if (res.data.tipoDeUser === 'admin') {
-                localStorage.setItem('correo', this.state.correo);
-                localStorage.setItem('tipoDeUser', res.data.tipoDeUser);
-                window.location.href = '/paginaPrincipalAdmin';
             }
-        } else {
+        }
+
+        if (localStorage.getItem("logued") !== "true") {
             await swal({
                 title: "El correo o la contraseña son incorrectos",
                 text: "Vuelve a intentarlo otra vez",
                 icon: "warning",
                 timer: "4000"
             });
-
+            this.setState({ logueado: false });
         }
+
+
     }
 
     render(
@@ -93,18 +70,20 @@ export default class login extends Component {
                     <form onSubmit={this.onSubmit}>
                         <div className="form-group" >
                             <input type="email" placeholder="correo" required className="form-control"
-                                name="correo" onChange={this.onInputChange} value={this.state.correo} />
+                                name="correo" onChange={this.onInputChange} value={this.state.correo} id="correoUsuario" />
                         </div>
 
                         <div className="form-group" >
-                            <input type="password" placeholder="contraseña" required className="form-control"
+                            <input type="password" placeholder="contraseña" required className="form-control" id="contraseña"
                                 name="password" onChange={this.onInputChange} value={this.state.password} autoComplete="nope"
                             />
                         </div>
-
-                        <button type="submit" className="btn btn-primary">
+                        {!this.state.logueado && <button type="submit" className="btn btn-primary">
                             ingresar
-                        </button>
+                        </button>}
+
+                        {this.state.logueado && <Link className="btn btn-lg btn-primary" aria-current="page" to="/paginaPrincipalJugador"> Quiero Jugar </Link>}
+
                     </form>
                 </div>
             </div>
